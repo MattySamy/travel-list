@@ -1,0 +1,47 @@
+import { useState } from "react";
+import Item from "./Item";
+export default function PackingList({
+  items,
+  onDeleteItem,
+  onToggleItem,
+  clearList,
+}) {
+  const [sortBy, setSortBy] = useState("input");
+  let sortedItems;
+  if (sortBy === "input") {
+    sortedItems = items;
+  } else if (sortBy === "description") {
+    sortedItems = [...items].sort(
+      (a, b) => a.description.localeCompare(b.description) // important compare for strings
+    );
+  } else if (sortBy === "packed") {
+    sortedItems = [...items]
+      .filter((item) => item.packed === true)
+      .sort((item1, item2) => +item2.packed - +item1.packed);
+  }
+  return (
+    <div className="list">
+      <ul>
+        {" "}
+        {sortedItems.map((item) => (
+          <Item
+            item={item}
+            key={item.id}
+            onDeleteItem={onDeleteItem}
+            onToggleItem={onToggleItem}
+          />
+        ))}{" "}
+      </ul>{" "}
+      <div className="actions">
+        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+          <option value="input"> Sort by input order </option>{" "}
+          <option value="description"> Sort by description </option>{" "}
+          <option value="packed"> Sort by packed status </option>{" "}
+        </select>{" "}
+        {items.length > 0 ? (
+          <button onClick={clearList}> Clear List </button>
+        ) : null}{" "}
+      </div>{" "}
+    </div>
+  );
+}
